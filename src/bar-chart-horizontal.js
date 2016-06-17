@@ -1,5 +1,5 @@
 /**
- * Concrete bar chart/histogram implementation.
+ * Concrete horizontal bar chart/histogram implementation.
  *
  * Examples:
  * - {@link http://dc-js.github.com/dc.js/ Nasdaq 100 Index}
@@ -24,7 +24,7 @@
  * Interaction with a chart will only trigger events and redraws within the chart's group.
  * @return {dc.barChart}
  */
-dc.barChart = function (parent, chartGroup) {
+dc.barChartHorizontal = function (parent, chartGroup) {
     var MIN_BAR_WIDTH = 1;
     var DEFAULT_GAP_BETWEEN_BARS = 2;
     var LABEL_PADDING = 3;
