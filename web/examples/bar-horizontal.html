@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>dc.js - Bar Chart Example</title>
+    <meta charset="UTF-8">
+    <link rel="stylesheet" type="text/css" href="../css/bootstrap.min.css">
+    <link rel="stylesheet" type="text/css" href="../css/dc.css"/>
+</head>
+<body>
+
+<div class="container">
+<script type="text/javascript" src="header.js"></script>
+<div id="test"></div>
+
+<script type="text/javascript" src="../js/d3.js"></script>
+<script type="text/javascript" src="../js/crossfilter.js"></script>
+<script type="text/javascript" src="../js/dc.js"></script>
+<script type="text/javascript">
+
+var chart = dc.barChartHorizontal("#test");
+
+d3.csv("morley.csv", function(error, experiments) {
+    window.experiments = experiments;
+
+  experiments.forEach(function(exp) {
+    exp.Speed = +exp.Speed;
+  });
+
+  window.ndx                 = crossfilter(experiments),
+  window.runDimension        = window.ndx.dimension(function(d) {return +d.Run;}),
+  window.speedSumGroup       = runDimension.group().reduceSum(function(d) {return d.Speed * d.Run / 1000;});
+
+   chart
+    .width(768)
+    .height(480)
+    .y(d3.scale.linear().domain([
+        d3.min(experiments, function(d) {return +d.Run; }),
+        d3.max(experiments, function(d) {return +d.Run; }) + 1
+    ]))
+    // .x(d3.scale.linear().domain([
+    //     0,
+    //     d3.max(speedSumGroup.all(), function(d) { return d.value; })
+    // ]))
+
+    chart = chart.brushOn(false)
+        .renderVerticalGridLines(true)
+        .renderHorizontalGridLines(true)
+
+    chart = chart.xAxisLabel("This is the X Axis!")
+    .dimension(runDimension)
+    .group(speedSumGroup)
+    .on('renderlet', function(chart) {
+        chart.selectAll('rect').on("click", function(d) {
+            console.log("click!", d);
+        });
+    });
+    chart.render();
+});
+
+</script>
+
+</div>
+</body>
+</html>
