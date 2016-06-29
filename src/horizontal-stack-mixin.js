@@ -183,7 +183,7 @@ dc.horizontalStackMixin = function (_chart) {
 
     _chart.xAxisMax = function () {
         var max = d3.max(flattenStack(), function (p) {
-            return p.x;// + p.x0;
+            return p.x + p.x0;
         });
 
         return dc.utils.add(max, _chart.xAxisPadding());

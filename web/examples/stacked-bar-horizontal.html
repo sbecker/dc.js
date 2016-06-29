@@ -51,11 +51,6 @@
               .width(768)
               .height(480)
               .y(d3.scale.linear().domain([1,21]))
-              .x(d3.scale.linear().domain([
-                  0,
-                  // d3.max(speedSumGroup.all(), function(d) { return d.value; })
-                  4500
-              ]))
               .margins({left: 50, top: 20, right: 10, bottom: 20})
               .brushOn(false)
               .clipPadding(10)
