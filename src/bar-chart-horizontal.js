@@ -161,7 +161,7 @@ dc.barChartHorizontal = function (parent, chartGroup) {
             })
             .attr('x', function (d) {
                 console.log('d.x', d.x, 'd.x0', d.x0);
-                var x = 0;
+                var x = _chart.x()(d.x0);
 
                 if (d.x < 0) {
                     x -= barWidth(d);

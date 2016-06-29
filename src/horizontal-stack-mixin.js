@@ -13,8 +13,9 @@ dc.horizontalStackMixin = function (_chart) {
         layer.name = String(layer.name || layerIdx);
         layer.values = layer.group.all().map(function (d, i) {
             return {
-                x: layer.hidden ? null : valAccessor(d, i),
-                y: _chart.keyAccessor()(d, i),
+                // X & Y will be flipped post stacking
+                x: _chart.keyAccessor()(d, i),
+                y: layer.hidden ? null : valAccessor(d, i),
                 data: d,
                 layer: layer.name,
                 hidden: layer.hidden
@@ -50,7 +51,7 @@ dc.horizontalStackMixin = function (_chart) {
         }
         return function (p) {
             //return true;
-            return p.y >= yDomain[0] && p.y <= yDomain[yDomain.length - 1];
+            return p.x >= yDomain[0] && p.x <= yDomain[yDomain.length - 1];
         };
     }
 
@@ -271,9 +272,33 @@ dc.horizontalStackMixin = function (_chart) {
         return !l.hidden;
     }
 
+    function flipXY (layers) {
+        return layers.map(function (layer) {
+            return {
+                group: layer.group,
+                name: layer.name,
+                accessor: layer.accessor,
+                values: layer.values.map(function (value) {
+                    return {
+                        data: value.data,
+                        hidden: value.hidden,
+                        layer: value.layer,
+                        x: value.y,
+                        y: value.x,
+                        x0: value.y0
+                    };
+                })
+            };
+        });
+    }
+
     _chart.data(function () {
         var layers = _stack.filter(visability);
-        return layers.length ? _chart.stackLayout()(layers) : [];
+        if (!layers.length) {
+            return [];
+        }
+        var stackedLayers = _chart.stackLayout()(layers);
+        return flipXY(stackedLayers);
     });
 
     _chart._ordinalXDomain = function () {
