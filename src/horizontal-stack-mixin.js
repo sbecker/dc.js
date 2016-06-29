@@ -301,7 +301,7 @@ dc.horizontalStackMixin = function (_chart) {
         return flipXY(stackedLayers);
     });
 
-    _chart._ordinalXDomain = function () {
+    _chart._ordinalYDomain = function () {
         var flat = flattenStack().map(dc.pluck('data'));
         var ordered = _chart._computeOrderedGroups(flat);
         return ordered.map(_chart.keyAccessor());
