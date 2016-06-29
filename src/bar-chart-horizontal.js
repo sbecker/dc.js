@@ -36,6 +36,7 @@ dc.barChartHorizontal = function (parent, chartGroup) {
     var _alwaysUseRounding = false;
 
     var _barHeight;
+    var _dyOffset = '0.35em';  // this helps center labels https://github.com/mbostock/d3/wiki/SVG-Shapes#svg_text
 
     dc.override(_chart, 'rescale', function () {
         _chart._rescale();
@@ -96,7 +97,8 @@ dc.barChartHorizontal = function (parent, chartGroup) {
         labels.enter()
             .append('text')
             .attr('class', 'barLabel')
-            .attr('text-anchor', 'middle');
+            .attr('dy', _dyOffset)
+            .attr('text-anchor', 'start');
 
         if (_chart.isOrdinal()) {
             labels.on('click', _chart.onClick);
@@ -118,7 +120,7 @@ dc.barChartHorizontal = function (parent, chartGroup) {
                     x -= barWidth(d);
                 }
 
-                return dc.utils.safeNumber(x - LABEL_PADDING);
+                return dc.utils.safeNumber(x + LABEL_PADDING);
             })
             .text(function (d) {
                 return _chart.label()(d);
