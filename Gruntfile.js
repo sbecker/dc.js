@@ -13,7 +13,8 @@ module.exports = function (grunt) {
         web: 'web',
         pkg: require('./package.json'),
         banner: grunt.file.read('./LICENSE_BANNER'),
-        jsFiles: module.exports.jsFiles
+        jsFiles: module.exports.jsFiles,
+        jsFilesExt: module.exports.jsFilesExt,
     };
 
     grunt.initConfig({
@@ -28,6 +29,10 @@ module.exports = function (grunt) {
             js: {
                 src: '<%= conf.jsFiles %>',
                 dest: '<%= conf.pkg.name %>.js'
+            },
+            ext: {
+                src: '<%= conf.jsFilesExt %>',
+                dest: 'dc-ext.js',
             }
         },
         uglify: {
@@ -399,6 +404,8 @@ module.exports = function (grunt) {
     grunt.registerTask('lint', ['jshint', 'jscs']);
     grunt.registerTask('default', ['build', 'shell:hooks']);
     grunt.registerTask('doc-debug', ['build', 'jsdoc', 'jsdoc2md', 'watch:jsdoc2md']);
+
+    grunt.registerTask('dist-ext', ['concat:ext']);
 };
 
 module.exports.jsFiles = [
@@ -439,4 +446,10 @@ module.exports.jsFiles = [
     'src/box-plot.js',
     'src/select-menu.js',
     'src/footer.js'  // NOTE: keep this last
+];
+
+module.exports.jsFilesExt = [
+    'src/horizontal-coordinate-grid-mixin.js',
+    'src/horizontal-stack-mixin.js',
+    'src/bar-chart-horizontal.js'
 ];
