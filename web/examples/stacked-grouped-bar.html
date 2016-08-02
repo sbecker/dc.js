@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>dc.js - Bar Chart Example</title>
+    <meta charset="UTF-8">
+    <link rel="stylesheet" type="text/css" href="../css/bootstrap.min.css">
+    <link rel="stylesheet" type="text/css" href="../css/dc.css"/>
+</head>
+<body>
+
+<div class="container">
+<script type="text/javascript" src="header.js"></script>
+<div id="chart1"></div>
+
+<script type="text/javascript" src="../js/d3.js"></script>
+<script type="text/javascript" src="../js/crossfilter.js"></script>
+<script type="text/javascript" src="../js/dc.js"></script>
+<script type="text/javascript">
+
+var height = 400;
+var width = 800;
+var margins = {top: 15, right: 10, bottom: 20, left: 40};
+
+var vowels = ['a', 'e', 'i', 'o', 'u'];
+function randomVowel(length) {
+    var val = "";
+    for(var i = 0; i < length; i++) {
+        val += vowels[Math.floor(Math.random()*vowels.length)];
+    }
+    return val;
+}
+
+function randomDate(start, end) {
+    var date = new Date(start.getTime() + Math.random() * (end.getTime() - start.getTime()));
+    return new Date(date.getYear(), date.getMonth(), date.getDate());
+}
+
+// Create a Random Parent
+var start = new Date(2014, 1, 1);
+var end = new Date(2014, 2, 1);
+
+var names = ['Scott', 'Aron', 'Ryan', 'Jason'];
+
+function randomName() {
+    var idx = Math.round(Math.random() * (names.length - 1));
+    return names[idx];
+}
+
+function randomData(idx) {
+    var x = {
+        id: idx,
+        // value: Math.floor(Math.random()*25) + 50,
+        value: Math.floor(Math.random()*25) + 50,
+        oValue: randomVowel(1),
+        vowels: [randomVowel(2), randomVowel(2), randomVowel(2)],
+        numbers: [Math.floor(Math.random()*25), Math.floor(Math.random()*25), Math.floor(Math.random()*25)],
+        dates: [randomDate(start, end), randomDate(start, end)]
+    };
+    console.log('randomData: ', x);
+    return x;
+}
+
+function reduceObj(previous, current) {
+    previous[current] = (previous[current] || 0) + 1;
+    return previous;
+}
+
+// Generate Random Data
+var data = [];
+for(var i = 0; i < 2000; i++) {
+    data[i] = randomData(i);
+    data[i].vowelsObj = data[i].vowels.reduce(reduceObj, {});
+    data[i].numbersObj = data[i].numbers.reduce(reduceObj, {});
+    data[i].datesObj = data[i].dates.reduce(reduceObj, {});
+}
+console.log('data', data);
+
+// Crossfilter the data
+var ndx = crossfilter(data);
+
+// Single Value Dimension (BAR)
+var dim1 = ndx.dimension(function(d) { return [d.value, d.oValue]; });
+var grp1 = dim1.group().reduceCount();
+var chart1 = dc.barChart2("#chart1")
+    .width(width)
+    .height(height)
+    .margins(margins)
+    .dimension(dim1)
+    .group(grp1)
+    .x(d3.scale.linear().domain([50, 55]))
+    .elasticY(true)
+    .keyAccessor(function(d) { return d.key[0]; })
+    .layerAccessor(function (d) { return d.key[1]; })
+    .layerFunctor(dc.barChart2.layerFn.group)
+    .render();
+
+// var renderers = Object.keys(dc.barChart2.layerFn),
+//     rendererIndex = 0;
+// setInterval(function() {
+//     var currentRenderer = renderers[rendererIndex++ % renderers.length];
+//     chart1.layerFunctor(dc.barChart2.layerFn[currentRenderer]);
+//     chart1.redraw();
+//     document.getElementById('typeLabel').innerHTML = currentRenderer;
+// },2000);
+
+</script>
+
+</div>
+</body>
+</html>
